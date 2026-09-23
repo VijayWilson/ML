@@ -1,6 +1,0 @@
-self.play(vertex_dot.animate.set_color(YELLOW), run_time=0.2)
-        
-        # Pulse cycle 1: Expand then shrink back
-        self.play(vertex_dot.animate.scale(1.8), run_time=0.4, rate_func=there_and_back)
-        # Pulse cycle 2: Brief second pulse for emphasis
-        self.play(vertex_dot.animate.scale(1.8), run_time=0.4, rate_func=there_and_back)
