@@ -1,1 +1,301 @@
+ # ==========================================
+        # DISPLAY THE GOAL AS TEXT
+        # ==========================================
+        ft = Text(
+            "\"To find the minimum value of y with respect to x\"", 
+            t2w={'x': BOLD, 'y': BOLD},
+            t2c={"x": GREEN, 'y': RED},
+            color=BLUE_D, 
+            font_size=24, 
+            slant=ITALIC,
+        )
+        self.play(Write(ft), runtime=3)
+        self.wait(7)
 
+        self.play(
+            FadeOut(ft),
+            run_time=1.5,
+            rate_func=smooth
+        )
+        self.wait(0.5)
+
+
+# ==========================================================
+        # CINEMATIC CAMERA ZOOM (Extended Left Margin)
+        # ==========================================================
+        # 1. Gather all objects located on the left side into a single VGroup
+        left_side_objects = VGroup(
+                    equations,
+                    horiz_line,
+                    vert_line,
+                    label_x,
+                    label_y,
+                    *x_val_mobjects,
+                    *y_val_mobjects,
+                    table_box
+                )
+
+        # Focus center at x=0.5 pushes the Y-axis to the middle-right,
+        # creating a spacious left column for text.
+        target_center = number_plane_scaled.c2p(0.5, 2.0)
+
+        self.play(
+            # Width=5.2 gives plenty of breathing room on the left
+            # while keeping x > 6 cut off on the right
+            self.camera.frame.animate.move_to(target_center).set(width=5.2),
+            FadeOut(left_side_objects, shift=LEFT * 0.5),
+            run_time=2.5,
+            rate_func=smooth
+        )
+        self.wait(1)
+
+
+        # ==========================================
+        # HOW TO COMPUTERIZE (Multi-level Bullet List)
+        # ==========================================
+        # 1. Main bullet
+        main_item_1 = Tex(
+            r"\ttfamily \textbf{\textit{$\bullet$ Iterate}}", 
+            font_size=12,
+            color="#090949"
+        )
+        
+        # 2. Level 1 sub-bullet
+        sub_item_1 = Tex(
+            r"\ttfamily \textit{- Update \textcolor{green}{x} until \textcolor{red}{y} becomes minimum}", 
+            font_size=10,
+            color="#090949"
+        )
+
+        # 3. Level 1 sub-bullet
+        sub_item_2 = Tex(
+            r"\ttfamily \textit{- We Need}", 
+            font_size=10,
+            color="#090949"
+        )
+
+        # 4. Level 2 nested sub-bullets
+        sub_item_2_1 = Tex(
+            r"\ttfamily \textit{* Direction - Which direction to move}", 
+            font_size=9,
+            color="#090949"
+        )
+
+        sub_item_2_2 = Tex(
+            r"\ttfamily \textit{* Magnitude - How much to move}", 
+            font_size=9,
+            color="#090949"
+        )
+
+        # --- LAYOUT SETUP ---
+        # A. Group all elements and arrange vertically
+        list_group = VGroup(
+            main_item_1,
+            sub_item_1,
+            sub_item_2,
+            sub_item_2_1,
+            sub_item_2_2
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.1)
+
+        # B. Apply horizontal indentations AFTER vertical arrangement
+        sub_item_1.shift(RIGHT * 0.18)
+        sub_item_2.shift(RIGHT * 0.18)
+        sub_item_2_1.shift(RIGHT * 0.30)
+        sub_item_2_2.shift(RIGHT * 0.30)
+
+        # C. Position the entire group inside the upper-left of the zoomed frame
+        camera_ul = self.camera.frame.get_corner(UL)
+        list_group.move_to(
+            camera_ul + RIGHT * 0.15 + DOWN * 0.75,
+            aligned_edge=UL
+        )
+
+        # --- ANIMATIONS ---
+        self.play(Write(main_item_1), run_time=0.8)
+        self.wait(1)
+
+        self.play(Write(sub_item_1), run_time=1.0)
+        self.wait(1)
+
+        self.play(Write(sub_item_2), run_time=0.8)
+        self.wait(1)
+
+        # self.play(
+        #     Write(sub_item_2_1),
+        #     Write(sub_item_2_2),
+        #     run_time=1.2
+        # )
+        # self.wait(2)
+
+        # ==========================================================
+        # 1. DIRECTION ANIMATION
+        # ==========================================================
+        # Define start point at (0, 5) on the NumberPlane
+        start_pt = number_plane_scaled.c2p(0, 5)
+        # End point extending rightward initially
+        end_pt = number_plane_scaled.c2p(1.5, 5)
+
+        direction_arrow = Arrow(
+            start=start_pt,
+            end=end_pt,
+            buff=0,
+            color=BLUE_C,
+            stroke_width=3,
+            max_tip_length_to_length_ratio=0.25
+        )
+
+        # Reveal "Direction" text while creating arrow at (0, 5)
+        self.play(
+            Write(sub_item_2_1),
+            GrowArrow(direction_arrow),
+            run_time=0.8
+        )
+
+        # Rotate arrow 360 degrees around its tail (0, 5) to signify direction scanning
+        self.play(
+            Rotate(
+                direction_arrow,
+                angle=2 * PI,
+                about_point=start_pt
+            ),
+            run_time=2.0,
+            rate_func=linear
+        )
+        self.wait(0.5)
+
+        # ==========================================================
+        # 2. MAGNITUDE ANIMATION (Length stretching & shrinking)
+        # ==========================================================
+        # Reveal "Magnitude" sub-bullet while stopping rotation and resetting rightward arrow
+        right_arrow = Arrow(
+            start=start_pt,
+            end=number_plane_scaled.c2p(1.5, 5),
+            buff=0,
+            color=BLUE_C,
+            stroke_width=3,
+            max_tip_length_to_length_ratio=0.25
+        )
+        self.play(
+            Write(sub_item_2_2),
+            Transform(direction_arrow, right_arrow),
+            run_time=0.8
+        )
+        self.wait(0.3)
+
+        # A. Stretch horizontally along positive X and shrink back to (0, 5)
+        stretched_horiz = Arrow(
+            start=start_pt,
+            end=number_plane_scaled.c2p(3.0, 5),
+            buff=0,
+            color=BLUE_C,
+            stroke_width=3,
+            max_tip_length_to_length_ratio=0.25
+        )
+        self.play(
+            Transform(direction_arrow, stretched_horiz),
+            run_time=0.8,
+            rate_func=there_and_back
+        )
+        self.wait(0.3)
+
+        # B. Orient arrow upward along positive Y
+        up_arrow = Arrow(
+            start=start_pt,
+            end=number_plane_scaled.c2p(0, 6.0),
+            buff=0,
+            color=BLUE_C,
+            stroke_width=3,
+            max_tip_length_to_length_ratio=0.25
+        )
+        self.play(Transform(direction_arrow, up_arrow), run_time=0.4)
+
+        # C. Stretch vertically along positive Y and shrink back to (0, 5)
+        stretched_vert = Arrow(
+            start=start_pt,
+            end=number_plane_scaled.c2p(0, 7.5),
+            buff=0,
+            color=BLUE_C,
+            stroke_width=3,
+            max_tip_length_to_length_ratio=0.25
+        )
+        self.play(
+            Transform(direction_arrow, stretched_vert),
+            run_time=0.8,
+            rate_func=there_and_back
+        )
+        self.wait(2)
+
+        self.play(
+            FadeOut(direction_arrow),
+            run_time=0.8,
+            rate_func=smooth
+        )
+        self.wait(2)
+
+        # ==========================================================
+        # ZOOM OUT & FADE OUT ALL OBJECTS
+        # ==========================================================
+        # 1. Gather all currently active objects into a single group
+        all_remaining_objects = VGroup(
+            number_plane_scaled,
+            parabola,
+            *plotted_dots,
+            plane_label_x,
+            plane_label_y,
+            list_group,
+        )
+
+        # 2. Reset camera frame to default scene view while fading out everything
+        self.play(
+            # Moves camera back to default center (0, 0) and full width (14)
+            self.camera.frame.animate.move_to(ORIGIN).set(width=14.0),
+            FadeOut(all_remaining_objects, scale=0.9),
+            run_time=2.5,
+            rate_func=smooth
+        )
+        self.wait(1)
+
+        # ==========================================================
+        # TRANSITION TEASER: SLOPE + EMERGING ARROW
+        # ==========================================================
+        # 1. Create the main teaser text (Clean LaTeX syntax)
+        slope_title = Tex(
+            r"\textbf{\textit{Slope}}",
+            font_size=42,
+            color="#090949"
+        )
+        slope_title.move_to(ORIGIN + LEFT * 1.5)
+
+        # 2. Define arrow starting behind the text and extending rightward
+        arrow_start = slope_title.get_right() + LEFT * 0.5
+        arrow_end = arrow_start + RIGHT * 3.5
+
+        slope_arrow = Arrow(
+            start=arrow_start,
+            end=arrow_end,
+            buff=0,
+            color=YELLOW,
+            stroke_width=5,
+            max_tip_length_to_length_ratio=0.15
+        )
+
+        # 3. Layer the text in FRONT of the arrow so it emerges from behind
+        slope_title.set_z_index(2)
+        slope_arrow.set_z_index(1)
+
+        # --- ANIMATION SEQUENCE ---
+        # A. Write the title text
+        self.play(
+            Write(slope_title),
+            run_time=1.0,
+            rate_func=smooth
+        )
+        self.wait(0.3)
+
+        # B. Grow the arrow emerging outward from behind the text
+        self.play(
+            GrowArrow(slope_arrow),
+            run_time=1.2,
+            rate_func=smooth
+        )
+        self.wait(2)
